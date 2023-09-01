@@ -1,4 +1,5 @@
 # 37_2_Node_PG_BizTime_Exercise_Further_Study
+
 ## Public repo of exercise for unit 37.2: Node PG BizTime Exercise Further Study
 
 We will complete the task of adding routes tests, many-to-many relationship, sligifying company names into codes, and the paying of invoices for our previous simple company/invoice tracker.
@@ -45,6 +46,7 @@ we'll focus on getting these routes up and running. Later on the next excercise 
       name,
       description,
       invoices: [ id, ... ]
+      industries: [field, ... ]
   	}
   }
   ```
@@ -80,7 +82,7 @@ we'll focus on getting these routes up and running. Later on the next excercise 
   	status: "deleted";
   }
   ```
-  
+
 ## /invoices
 
 - GET /invoices
@@ -144,6 +146,33 @@ we'll focus on getting these routes up and running. Later on the next excercise 
   	status: "deleted";
   }
   ```
+
+## /industries
+
+- GET
+  - listing all industries, which should show the company code(s) for that industry
+  - Returns:
+  ```js
+  {
+    industries:[
+      {
+        industry: {
+          code,
+          field,
+          companies: [comp_code, ...]
+        }
+      },
+      {industry: ...},
+    ]
+
+  }
+  ```
+- POST
+  - adding an industry
+- PUT/PATCH
+  - associating an industry to a company
+- DELETE
+  - deleting an industry
 
 ## Requirements
 

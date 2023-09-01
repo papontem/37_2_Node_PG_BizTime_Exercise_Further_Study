@@ -106,7 +106,22 @@ INSERT INTO company_industries (company_code, industry_code)
 --   JOIN industries AS i
 --     ON c_i.industry_code = i.code
 -- WHERE i.code = 'IT';
+
 --  company_code | industry_code | code |         field          | code  |      name      |  description
 -- --------------+---------------+------+------------------------+-------+----------------+---------------
 --  apple        | IT            | IT   | Information Technology | apple | Apple Computer | Maker of OSX.
 --  ibm          | IT            | IT   | Information Technology | ibm   | IBM            | Big blue.
+
+
+-- SELECT i.field 
+--   FROM industries AS i 
+--   JOIN company_industries AS c_i 
+--     ON i.code = c_i.industry_code 
+-- WHERE c_i.company_code = 'apple'
+
+--          field
+-- ------------------------
+--  Consumer Electronics
+--  Software Services
+--  Online Services
+--  Information Technology

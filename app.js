@@ -9,6 +9,7 @@ const morgan = require("morgan");
 
 const companyRoutes = require("./routes/companies");
 const invoiceRoutes = require("./routes/invoices");
+const industryRoutes = require("./routes/industries");
 
 // Parse request bodies for JSON
 app.use(express.json());
@@ -25,6 +26,8 @@ app.get("/favicon.ico", (req, res) => res.sendStatus(204));
 app.use("/companies", companyRoutes);
 // /invoices
 app.use("/invoices", invoiceRoutes);
+// /industries
+app.use("/industries", industryRoutes);
 
 /** 404 handler */
 

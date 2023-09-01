@@ -12,7 +12,6 @@ router.get("/", async (req, res, next) => {
 	// we wait the async db.query promise response
 	try {
 		// PAM: making sql quries db.query(`SQL STRING`)
-		console.log("Getting all Companies....");
 		const results = await db.query(`SELECT code, name FROM companies`);
 		// console.log(results.rows);
 		return res.json({ companies: results.rows });
@@ -36,15 +35,27 @@ router.get("/:code", async (req, res, next) => {
 			"SELECT id FROM invoices WHERE comp_code = $1",
 			[code]
 		);
-		// console.log(comp_results.rows);
-		return res.send({
-			company: {
-				code: comp_results.rows[0].code,
-				name: comp_results.rows[0].name,
-				description: comp_results.rows[0].description,
-				invoices: invoices_result.rows,
-			},
-		});
+
+		const industry_Query = "SELECT i.field FROM industries AS i JOIN company_industries AS c_i ON i.code = c_i.industry_code WHERE c_i.company_code =$1";
+		const industry_Params = [code];
+		/**
+			SELECT i.field 
+			FROM industries AS i 
+			JOIN company_industries AS c_i 
+			ON i.code = c_i.industry_code 
+			WHERE c_i.company_code =$1
+		 */
+		const industry_result = await db.query(
+			industry_Query,
+			industry_Params
+		);
+
+		const result = comp_results.rows[0];
+		result.invoices = invoices_result.rows;
+		result.industries = industry_result.rows;
+		// console.log("invoices:", result.invoices);
+		// console.log("industries:", result.industries);
+		return res.send({ company: result });
 	} catch (e) {
 		return next(e);
 	}
