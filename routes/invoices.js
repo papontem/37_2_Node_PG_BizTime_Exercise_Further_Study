@@ -58,33 +58,51 @@ router.patch("/:id", async (req, res, next) => {
 		const { id } = req.params;
 		const { amt, paid } = req.body;
 		// get the invoice in question
-		let invoice_Results = await db.query("SELECT * FROM invoices where id=$1", [id])
-		let is_paid = invoice_Results.rows[0].paid
+		let invoice_Results = await db.query("SELECT * FROM invoices where id=$1", [
+			id,
+		]);
+		let is_paid = invoice_Results.rows[0].paid;
 
 		// If paying unpaid invoice: sets paid_date to today
-		if(paid && !is_paid){
+		if (paid && !is_paid) {
 			console.log("PAYING");
-			// paid_date to today
-			// return?
+			
+			const today = new Date();
+			const update_Results = await db.query(
+				"UPDATE invoices SET amt=$1, paid=true, paid_date=$2 WHERE id=$3 RETURNING *",
+				[amt, today, id]
+			);
+			if (update_Results.rows.length === 0) {
+				throw new ExpressError(`Can't update invoice with id of ${id}`, 404);
+			}
+			return res.send({ invoice: update_Results.rows[0] });
 		}
 		// If un-paying: sets paid_date to null
-		if(!paid && is_paid ){
+		if (!paid && is_paid) {
 			console.log("UNPAYING");
-			// paid_date to null
-			// return?
+			
+			const update_Results = await db.query(
+				"UPDATE invoices SET amt=$1, paid=false, paid_date=null WHERE id=$2 RETURNING *",
+				[amt, id]
+			);
+			if (update_Results.rows.length === 0) {
+				throw new ExpressError(`Can't update invoice with id of ${id}`, 404);
+			}
+			return res.send({ invoice: update_Results.rows[0] });
 		}
 		// Else: keep current paid_date
-		// were only changing amt...?
-		
-
-		const update_Results = await db.query(
-			"UPDATE invoices SET amt=$1 WHERE id=$2 RETURNING *",
-			[amt, id]
-		);
-		if (update_Results.rows.length === 0) {
-			throw new ExpressError(`Can't update invoice with id of ${id}`, 404);
+		if (paid === is_paid) {
+			console.log("NOT CHANGING paid Value, paid date stays the same");
+			const update_Results = await db.query(
+				"UPDATE invoices SET amt=$1 WHERE id=$2 RETURNING *",
+				[amt, id]
+			);
+			if (update_Results.rows.length === 0) {
+				throw new ExpressError(`Can't update invoice with id of ${id}`, 404);
+			}
+			return res.send({ invoice: update_Results.rows[0] });
 		}
-		return res.send({ invoice: update_Results.rows[0] });
+		
 	} catch (e) {
 		return next(e);
 	}
