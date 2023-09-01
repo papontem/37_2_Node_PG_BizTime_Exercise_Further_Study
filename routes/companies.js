@@ -3,6 +3,7 @@
 const express = require("express");
 const ExpressError = require("../expressError");
 const router = express.Router();
+const slugify = require("slugify");
 const db = require("../db");
 
 // GET ALL COMPANIES FROM DATABASE
@@ -49,10 +50,30 @@ router.get("/:code", async (req, res, next) => {
 	}
 });
 
-// POST /companies create a new company
+// Slugify rules
+// slugify('some string', {
+// 	replacement: '-',  // replace spaces with replacement character, defaults to `-`
+// 	remove: undefined, // remove characters that match regex, defaults to `undefined`
+// 	lower: false,      // convert to lower case, defaults to `false`
+// 	strict: false,     // strip special characters except replacement, defaults to `false`
+// 	locale: 'vi',      // language code of the locale to use
+// 	trim: true         // trim leading and trailing replacement chars, defaults to `true`
+//   })
+
+// slugify('..', {replacement: "_", remove: /[*+~.()'"!:@]/g , lower:true,})
+
 router.post("/", async (req, res, next) => {
 	try {
-		const { code, name, description } = req.body;
+		let { code, name, description } = req.body;
+
+		if (!code) {
+			code = slugify(name, {
+				replacement: "_",
+				remove: /[!@#$%^&*()_+,~`.'"}][{|;:@]/g,
+				lower: true,
+			});
+		}
+
 		const results = await db.query(
 			"INSERT INTO companies (code, name, description) VALUES ($1, $2, $3) RETURNING code, name, description",
 			[code, name, description]

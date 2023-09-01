@@ -50,7 +50,8 @@ we'll focus on getting these routes up and running. Later on the next excercise 
   ```
 - POST /companies
   - Adds a company.
-  - Needs to be given JSON like: `{code, name, description}`
+  - Needs to be given JSON like: `{ name, description ,code}`
+  - a value for `code` is optional
   - Returns obj of new company:
   ```js
   {
@@ -79,7 +80,7 @@ we'll focus on getting these routes up and running. Later on the next excercise 
   	status: "deleted";
   }
   ```
-
+  
 ## /invoices
 
 - GET /invoices
