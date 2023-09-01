@@ -7,11 +7,11 @@ CREATE DATABASE biztime;
 \c biztime
 -- \c biztime_test
 
+DROP TABLE IF EXISTS company_industries;
+DROP TABLE IF EXISTS industries;
 DROP TABLE IF EXISTS invoices;
 DROP TABLE IF EXISTS companies;
 
-DROP TABLE IF EXISTS industries;
-DROP TABLE IF EXISTS company_industries;
 
 
 CREATE TABLE companies (
@@ -46,7 +46,7 @@ CREATE TABLE company_industries(
 
 -- commente out the inserts for when you create the test db
 
-INSERT INTO companies
+INSERT INTO companies (code,name, description)
   VALUES ('apple', 'Apple Computer', 'Maker of OSX.'),
          ('ibm', 'IBM', 'Big blue.');
 
@@ -55,3 +55,58 @@ INSERT INTO invoices (comp_Code, amt, paid, paid_date)
          ('apple', 200, false, null),
          ('apple', 300, true, '2018-01-01'),
          ('ibm', 400, false, null);
+
+INSERT INTO industries (code , field)
+  VALUES 
+    ('CE','Consumer Electronics'),
+    ('SS','Software Services'),
+    ('OS','Online Services'),
+    ('HS','Hardware Services'),
+    ('IT','Information Technology');
+
+INSERT INTO company_industries (company_code, industry_code)
+  VALUES
+    ('apple','CE'),
+    ('apple','SS'),
+    ('apple','OS'),
+    ('apple','IT'),
+    ('ibm','HS'),
+    ('ibm','IT');
+
+
+-- test queires.... 
+
+-- SELECT c.*
+--   FROM companies AS c
+--   JOIN company_industries AS c_i 
+--     ON c.code = c_i.company_code
+--   JOIN industries AS i 
+--     ON c_i.industry_code = i.code
+-- WHERE i.code = 'SS';
+--  code  |      name      |  description
+-- -------+----------------+---------------
+--  apple | Apple Computer | Maker of OSX.
+
+
+-- SELECT c_i.*, i.*, c.*
+--   FROM companies AS c
+--   JOIN company_industries AS c_i
+--     ON c.code = c_i.company_code
+--   JOIN industries AS i
+--     ON c_i.industry_code = i.code
+-- WHERE i.code = 'HS';
+--  company_code | industry_code | code |       field       | code | name | description
+-- --------------+---------------+------+-------------------+------+------+-------------
+--  ibm          | HS            | HS   | Hardware Services | ibm  | IBM  | Big blue.
+
+-- SELECT c_i.*, i.*, c.*
+--   FROM companies AS c
+--   JOIN company_industries AS c_i
+--     ON c.code = c_i.company_code
+--   JOIN industries AS i
+--     ON c_i.industry_code = i.code
+-- WHERE i.code = 'IT';
+--  company_code | industry_code | code |         field          | code  |      name      |  description
+-- --------------+---------------+------+------------------------+-------+----------------+---------------
+--  apple        | IT            | IT   | Information Technology | apple | Apple Computer | Maker of OSX.
+--  ibm          | IT            | IT   | Information Technology | ibm   | IBM            | Big blue.
