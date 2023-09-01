@@ -52,19 +52,39 @@ router.post("/", async (req, res, next) => {
 	}
 });
 
-// PUT/PATCH /invoices/:id update existing invoice
+// PUT/PATCH /invoices/:id update existing invoice and allows for paying off the invoice
 router.patch("/:id", async (req, res, next) => {
 	try {
 		const { id } = req.params;
-		const { amt } = req.body;
-		const results = await db.query(
+		const { amt, paid } = req.body;
+		// get the invoice in question
+		let invoice_Results = await db.query("SELECT * FROM invoices where id=$1", [id])
+		let is_paid = invoice_Results.rows[0].paid
+
+		// If paying unpaid invoice: sets paid_date to today
+		if(paid && !is_paid){
+			console.log("PAYING");
+			// paid_date to today
+			// return?
+		}
+		// If un-paying: sets paid_date to null
+		if(!paid && is_paid ){
+			console.log("UNPAYING");
+			// paid_date to null
+			// return?
+		}
+		// Else: keep current paid_date
+		// were only changing amt...?
+		
+
+		const update_Results = await db.query(
 			"UPDATE invoices SET amt=$1 WHERE id=$2 RETURNING *",
 			[amt, id]
 		);
-		if (results.rows.length === 0) {
+		if (update_Results.rows.length === 0) {
 			throw new ExpressError(`Can't update invoice with id of ${id}`, 404);
 		}
-		return res.send({ invoice: results.rows[0] });
+		return res.send({ invoice: update_Results.rows[0] });
 	} catch (e) {
 		return next(e);
 	}

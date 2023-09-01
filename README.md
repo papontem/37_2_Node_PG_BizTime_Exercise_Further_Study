@@ -124,7 +124,7 @@ we'll focus on getting these routes up and running. Later on the next excercise 
 
   - Updates an invoice.
   - If invoice cannot be found, returns a 404.
-  - Needs to be passed in a JSON body of: `{amt}`
+  - Needs to be passed in a JSON body of: `{amt , paid}`
   - Returns:
 
   ```js
