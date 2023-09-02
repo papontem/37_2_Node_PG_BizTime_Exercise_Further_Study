@@ -182,14 +182,14 @@ we'll focus on getting these routes up and running. Later on the next excercise 
 
 - POST /industries/
   - Adds an industry
-  - Needs to be passed in a JSON body of: `{code, field, companies}`
+ 
+  - Needs to be passed in a JSON body of: `{code, field}`
   - Returns: 
   ```js
   {
     industry:{
       code, 
-      field,
-      companies: [comp_code, ...]
+      field
     }
   }
   ```

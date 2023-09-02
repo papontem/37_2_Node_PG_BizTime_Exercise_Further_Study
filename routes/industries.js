@@ -4,7 +4,6 @@ const express = require("express");
 const ExpressError = require("../expressError");
 const router = express.Router();
 const db = require("../db");
-const { routes } = require("../app");
 
 // GET /industries listing all industries,
 // which should show the company code(s) for that industry
@@ -65,6 +64,10 @@ router.get("/:code", async (req, res, next) => {
         `,
 			[code]
 		);
+		if (industry_result.rows.length === 0) {
+			throw new ExpressError(`Can't find industry with code of ${code}`, 404);
+		}
+
 		const companies_result = await db.query(
 			`
         SELECT c.code
@@ -78,9 +81,8 @@ router.get("/:code", async (req, res, next) => {
 			[code]
 		);
 
-        let result = industry_result.rows[0]
-        // PAM: forgot about map too
-        result.companies = companies_result.rows.map((row)=> row.code)
+		let result = industry_result.rows[0];
+		result.companies = companies_result.rows.map((row) => row.code);
 		return res.json({ industry: result });
 	} catch (e) {
 		return next(e);
@@ -88,6 +90,25 @@ router.get("/:code", async (req, res, next) => {
 });
 
 // POST /industries adding an industry
+router.post("/", async (req, res, next) => {
+	try {
+		const { code, field} = req.body;
+		console.log("Sent code:", code);
+		console.log("Sent field:", field);
+
+		// Insert the new industry into the database
+		console.log("INSERTING NEW INDUSTRY");
+		const insert_results = await db.query(
+			"INSERT INTO industries (code, field) VALUES ($1, $2) RETURNING code, field",
+			[code, field]
+		);
+
+		let result = insert_results.rows[0];
+		return res.status(201).json({ industry: result });
+	} catch (e) {
+		return next(e);
+	}
+});
 
 // PUT/PATCH /industries/:code updating an industry
 
