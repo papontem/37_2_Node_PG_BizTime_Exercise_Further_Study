@@ -196,8 +196,10 @@ we'll focus on getting these routes up and running. Later on the next excercise 
 - PUT/PATCH /industries/[code]
   - Updates an industry.
   - If industry cannot be found, returns a 404.
-  - allows the associating or un-associating of an industry to a company by passing of company codes in the companies array json req body
-  - Needs to be passed in a JSON body of: `{code, field, companies}`
+  - allows the associating or un-associating of an industry to a company by passing of company codes in the companies array json req body. 
+  - companies must be written with the same syntax as following example:
+    > compA, compB, compC
+  - Needs to be passed in a JSON body of: `{newCode, field, companies}`
   - Returns: 
   ```js
   {
