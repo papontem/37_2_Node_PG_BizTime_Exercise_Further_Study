@@ -9,23 +9,13 @@ const db = require("../db");
 // which should show the company code(s) for that industry
 router.get("/", async (req, res, next) => {
 	try {
-		const results = await db.query(`SELECT i.* , c_i.company_code AS comp_code
+		const results = await db.query(`
+        SELECT i.code ,i.field , c_i.company_code AS comp_code
         FROM industries AS i
-        LEFT JOIN company_industries AS c_i ON i.code = c_i.industry_code`);
-		/**
-        SELECT i.* , c_i.company_code AS comp_code
-        FROM industries AS i
-        LEFT JOIN company_industries AS c_i ON i.code = c_i.industry_code;
-        */
-		console.log("result.rows", results.rows);
-
-		let industries = {};
-		for (let i = 0; i < results.rows.length; i++) {
-			let row = results.rows[i];
-			console.log("row:", row);
-            industries[i] = row 
-		}
-        console.log("Industries Obj:", industries);
+        LEFT JOIN company_industries AS c_i
+            ON i.code = c_i.industry_code
+        `);
+		
 		return res.json({ industries: results.rows });
 	} catch (e) {
 		return next(e);

@@ -156,13 +156,14 @@ we'll focus on getting these routes up and running. Later on the next excercise 
   {
     industries:[
       {
-        industry: {
-          code,
-          field,
-          companies: [comp_code, ...]
-        }
+        code, 
+        field,
+        companies: [comp_code, ...]
       },
-      {industry: ...},
+      {
+        ...
+      },
+      ...
     ]
 
   }
