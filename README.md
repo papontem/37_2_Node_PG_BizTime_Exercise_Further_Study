@@ -149,8 +149,8 @@ we'll focus on getting these routes up and running. Later on the next excercise 
 
 ## /industries
 
-- GET
-  - listing all industries, which should show the company code(s) for that industry
+- GET /industries
+  - Lists all industries, which should show the company code(s) for that industry
   - Returns:
   ```js
   {
@@ -160,20 +160,63 @@ we'll focus on getting these routes up and running. Later on the next excercise 
         field,
         companies: [comp_code, ...]
       },
-      {
-        ...
-      },
       ...
     ]
 
   }
   ```
-- POST
-  - adding an industry
-- PUT/PATCH
-  - associating an industry to a company
-- DELETE
-  - deleting an industry
+
+- GET /industries/[code]
+  - Returns industry with matching code
+  - If industry cannot be found, returns a 404.
+  - Returns:
+  ```js
+  {
+    industry:{
+      code, 
+      field,
+      companies: [comp_code, ...]
+    }
+  }
+  ```
+
+- POST /industries/
+  - Adds an industry
+  - Needs to be passed in a JSON body of: `{code, field, companies}`
+  - Returns: 
+  ```js
+  {
+    industry:{
+      code, 
+      field,
+      companies: [comp_code, ...]
+    }
+  }
+  ```
+- PUT/PATCH /industries/[code]
+  - Updates an industry.
+  - If industry cannot be found, returns a 404.
+  - allows the associating or un-associating of an industry to a company by passing of company codes in the companies array json req body
+  - Needs to be passed in a JSON body of: `{code, field, companies}`
+  - Returns: 
+  ```js
+  {
+    industry:{
+      code, 
+      field,
+      companies: [comp_code, ...]
+    }
+  }
+  ```
+- DELETE /industries/[code]
+  - Deletes an industry
+  - if industry cannot be found, returns a 404.
+  - Returns:
+  ```js
+  {
+  	status: "deleted";
+  }
+  ```
 
 ## Requirements
 

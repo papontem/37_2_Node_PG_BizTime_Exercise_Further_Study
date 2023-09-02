@@ -4,6 +4,7 @@ const express = require("express");
 const ExpressError = require("../expressError");
 const router = express.Router();
 const db = require("../db");
+const { routes } = require("../app");
 
 // GET /industries listing all industries,
 // which should show the company code(s) for that industry
@@ -36,27 +37,51 @@ router.get("/", async (req, res, next) => {
 				});
 			} else {
 				// console.log("OLD CODE!!!");
-				// find the index for the first code, that will
-				// be the index of the industry we
-				// need to append a new comp_code to
-
-				// const array1 = [5, 12, 8, 130, 44];
-				// const isLargeNumber = (element) => element > 13;
-				// console.log(array1.findIndex(isLargeNumber));
-				// // Expected output: 3
-
 				let industry_Array_Index = code_list.findIndex(
 					(code_element) => code_element === code
 				);
 				console.log("industry_Array_Index:", industry_Array_Index);
-                industriesArray[industry_Array_Index].companies.push(comp_code)
+				industriesArray[industry_Array_Index].companies.push(comp_code);
 			}
-            
 		}
-        // console.log("code_list:", code_list);
-        // console.log("Industries Array:", industriesArray);
-        
+		// console.log("code_list:", code_list);
+		// console.log("Industries Array:", industriesArray);
+
 		return res.json({ industries: industriesArray });
+	} catch (e) {
+		return next(e);
+	}
+});
+
+//  GET /industries/:code returns industry with matching code
+router.get("/:code", async (req, res, next) => {
+	try {
+		const { code } = req.params;
+		const industry_result = await db.query(
+			`
+        SELECT * 
+        FROM industries 
+        WHERE code =$1
+        `,
+			[code]
+		);
+		const companies_result = await db.query(
+			`
+        SELECT c.code
+        FROM companies AS c
+        JOIN company_industries AS c_i
+            ON c.code = c_i.company_code
+        JOIN industries AS i
+            ON c_i.industry_code = i.code
+        WHERE i.code = $1;
+        `,
+			[code]
+		);
+
+        let result = industry_result.rows[0]
+        // PAM: forgot about map too
+        result.companies = companies_result.rows.map((row)=> row.code)
+		return res.json({ industry: result });
 	} catch (e) {
 		return next(e);
 	}
@@ -64,8 +89,8 @@ router.get("/", async (req, res, next) => {
 
 // POST /industries adding an industry
 
-// PUT/PATCH /industries/:code associating an industry to a company
+// PUT/PATCH /industries/:code updating an industry
 
-// DELETE /industries/:code
+// DELETE /industries/:code deleting an industry
 
 module.exports = router;
